@@ -40,6 +40,7 @@ export default function ColorPalettePanel( { name } ) {
 		'color.defaultPalette',
 		name
 	);
+
 	return (
 		<VStack
 			className="edit-site-global-styles-color-palette-panel"
@@ -49,6 +50,7 @@ export default function ColorPalettePanel( { name } ) {
 				<PaletteEdit
 					canReset={ themeColors !== baseThemeColors }
 					canOnlyChangeValues
+					canRandomize
 					colors={ themeColors }
 					onChange={ setThemeColors }
 					paletteLabel={ __( 'Theme' ) }

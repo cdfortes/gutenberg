@@ -2,6 +2,7 @@
  * External dependencies
  */
 import { kebabCase } from 'lodash';
+import chroma from 'chroma-js';
 
 /**
  * WordPress dependencies
@@ -292,6 +293,7 @@ export default function PaletteEdit( {
 	emptyMessage,
 	canOnlyChangeValues,
 	canReset,
+	canRandomize,
 	slugPrefix = '',
 } ) {
 	const isGradient = !! gradients;
@@ -305,6 +307,43 @@ export default function PaletteEdit( {
 		! elements[ editingElement ].slug;
 	const elementsLength = elements.length;
 	const hasElements = elementsLength > 0;
+
+	function randomizeColors() {
+		/*
+			Generates a color scale based on hue scale rotations in the Cubehelix color scheme,
+ 			from lightest to darkest.
+			Cubehelix is a data visualization color scheme, which can be easily used to generate
+			palettes whose colors are perceived to be increasing in intensity.
+			Using hue rotations assists in making sure that "good" contrast is generated between
+			foreground and background colors.
+	 */
+		const colorScale = chroma
+			.cubehelix()
+			/* eslint-disable-next-line no-restricted-syntax */
+			.start( Math.floor( Math.random() * 360 ) ) // Generate a random start point for the hue scale.
+			.rotations( 0.75 )
+			.lightness( [ 0.3, 0.8 ] ) // Defines minimum and maximum lightness of first and last colors, respectively. By default, the ends of scales are black and white.
+			.scale() // convert to chroma.scale
+			.correctLightness()
+			.colors( colors.length );
+
+		/*
+			The following code is just a test, and it relies on the array of theme colors being in the following order, by slug/name:
+			1. Foreground
+			2. Background
+			3. Primary
+			4. Secondary
+			5. Tertiary
+		*/
+		const newColors = colors.map( ( color, index ) => {
+			return {
+				...color,
+				color: colorScale[ index ],
+			};
+		} );
+
+		onChange( newColors );
+	}
 
 	return (
 		<PaletteEditStyles>
@@ -424,6 +463,14 @@ export default function PaletteEdit( {
 													{ isGradient
 														? __( 'Reset gradient' )
 														: __( 'Reset colors' ) }
+												</Button>
+											) }
+											{ canRandomize && (
+												<Button
+													variant="tertiary"
+													onClick={ randomizeColors }
+												>
+													{ __( 'Randomize' ) }
 												</Button>
 											) }
 										</NavigableMenu>
