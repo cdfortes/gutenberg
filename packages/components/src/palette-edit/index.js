@@ -322,13 +322,15 @@ export default function PaletteEdit( {
 			/* eslint-disable-next-line no-restricted-syntax */
 			.start( Math.floor( Math.random() * 360 ) ) // Generate a random start point for the hue scale.
 			.rotations( 0.75 )
-			.lightness( [ 0.3, 0.8 ] ) // Defines minimum and maximum lightness of first and last colors, respectively. By default, the ends of scales are black and white.
+			.lightness( [ 0.3, 0.8 ] ) // Defines minimum and maximum lightness of first and last colors,
+			// respectively. By default, the ends of scales are black and white.
 			.scale() // convert to chroma.scale
 			.correctLightness()
 			.colors( colors.length );
 
 		/*
-			The following code is just a test, and it relies on the array of theme colors being in the following order, by slug/name:
+			The following code is just a test, and it relies on the array of theme colors being in the following order,
+			by slug/name:
 			1. Foreground
 			2. Background
 			3. Primary
