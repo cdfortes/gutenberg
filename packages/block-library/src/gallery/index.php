@@ -60,15 +60,8 @@ function block_core_gallery_render( $attributes, $content ) {
 	// gap on the gallery.
 	$gap_value = $gap ? $gap : 'var( --wp--style--gallery-gap-default, var( --gallery-block--gutter-size, var( --wp--style--block-gap, 0.5em ) ) )';
 	$style     = '.' . $class . '{ --wp--style--unstable-gallery-gap: ' . $gap_value . '; gap: ' . $gap_value . '}';
-	// Ideally styles should be loaded in the head, but blocks may be parsed
-	// after that, so loading in the footer for now.
-	// See https://core.trac.wordpress.org/ticket/53494.
-	add_action(
-		'wp_footer',
-		function () use ( $style ) {
-			echo '<style> ' . $style . '</style>';
-		}
-	);
+
+	gutenberg_enqueue_block_support_styles( $style, 11 );
 	return $content;
 }
 /**
