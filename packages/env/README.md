@@ -460,12 +460,12 @@ _Note: the port number environment variables (`WP_ENV_PORT` and `WP_ENV_TESTS_PO
 
 Several types of strings can be passed into the `core`, `plugins`, `themes`, and `mappings` fields.
 
-| Type              | Format                        | Example(s)                                               |
-| ----------------- | ----------------------------- | -------------------------------------------------------- |
-| Relative path     | `.<path>\|~<path>`            | `"./a/directory"`, `"../a/directory"`, `"~/a/directory"` |
-| Absolute path     | `/<path>\|<letter>:\<path>`   | `"/a/directory"`, `"C:\\a\\directory"`                   |
-| GitHub repository | `<owner>/<repo>[#<ref>]`      | `"WordPress/WordPress"`, `"WordPress/gutenberg#trunk"`   |
-| ZIP File          | `http[s]://<host>/<path>.zip` | `"https://wordpress.org/wordpress-5.4-beta2.zip"`        |
+| Type              | Format                        | Example(s)                                                                                                        |
+| ----------------- | ----------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Relative path     | `.<path>\|~<path>`            | `"./a/directory"`, `"../a/directory"`, `"~/a/directory"`                                                          |
+| Absolute path     | `/<path>\|<letter>:\<path>`   | `"/a/directory"`, `"C:\\a\\directory"`                                                                            |
+| GitHub repository | `<owner>/<repo>[#<ref>]`      | `"WordPress/WordPress"`, `"WordPress/gutenberg#trunk"`, if no branch is provided wp-env will fall back to `#main` |
+| ZIP File          | `http[s]://<host>/<path>.zip` | `"https://wordpress.org/wordpress-5.4-beta2.zip"`                                                                 |
 
 Remote sources will be downloaded into a temporary directory located in `~/.wp-env`.
 
@@ -540,8 +540,8 @@ This is useful for plugin development when upstream Core changes need to be test
 
 ```json
 {
-  "core": "WordPress/WordPress#master",
-  "plugins": ["."]
+	"core": "WordPress/WordPress#trunk",
+	"plugins": [ "." ]
 }
 ```
 
