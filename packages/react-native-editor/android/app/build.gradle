@@ -124,6 +124,8 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
+    def buildConfigKeyInitialContent = "INITIAL_CONTENT"
+
     defaultConfig {
         applicationId "com.gutenberg"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -132,8 +134,10 @@ android {
         versionName "1.0"
         ndk {
             abiFilters "armeabi", "armeabi-v7a", "arm64-v8a", "x86", "mips"
-
         }
+        // This is only used in benchmark builds, but it must be defined for all builds in order
+        // for them to compile
+        buildConfigField "String", buildConfigKeyInitialContent, "\"\""
     }
     splits {
         abi {
@@ -148,9 +152,29 @@ android {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
+
+        benchmark {
+            signingConfig signingConfigs.debug
+            matchingFallbacks = ['release']
+            debuggable false
+
+            // minification turned off because it is breaking the build, would be good to get this turned on
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
     }
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
+
+        if (variant.getName() == "benchmark") {
+            def initialContent = new File("${project.rootDir}/../src/initial-html.js")
+                    .text
+                    .replace("\n", " ") // make into a single line
+                    .replace("\"", "\\\"") // escape quotes
+
+            buildConfigField "String", buildConfigKeyInitialContent, "\"$initialContent<!-- wp:heading {\\\"level\\\":1} --><h1>${project.benchmarkLastBlockText}</h1><!-- /wp:heading -->\""
+        }
+
         variant.outputs.each { output ->
             // For each separate APK per architecture, set a unique version code as described here:
             // https://developer.android.com/studio/build/configure-apk-splits.html
@@ -170,9 +194,13 @@ android {
 }
 
 dependencies {
-    implementation("org.wordpress-mobile.gutenberg-mobile:react-native-bridge", {
+    debugImplementation("org.wordpress-mobile.gutenberg-mobile:react-native-bridge", {
         exclude group: 'org.wordpress', module: 'utils'
     })
+    benchmarkImplementation("org.wordpress-mobile.gutenberg-mobile:react-native-gutenberg-bridge:v1.76.0", {
+        exclude group: 'org.wordpress', module: 'utils'
+    })
+
     implementation 'androidx.appcompat:appcompat:1.2.0'
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
@@ -192,7 +220,7 @@ dependencies {
     implementation "com.github.wordpress-mobile:react-native-prompt-android:${extractPackageVersion(packageJson, 'react-native-prompt-android', 'dependencies')}"
     implementation "org.wordpress-mobile:react-native-webview:${extractPackageVersion(packageJson, 'react-native-webview', 'dependencies')}"
     implementation "org.wordpress-mobile:react-native-clipboard:${extractPackageVersion(packageJson, '@react-native-clipboard/clipboard', 'dependencies')}"
-    
+
     implementation("com.github.wordpress-mobile:react-native-gesture-handler:${extractPackageVersion(packageJson, 'react-native-gesture-handler', 'dependencies')}", {
         // Remove Reanimated transitive dependency as it's already defined here
         exclude group: 'com.github.wordpress-mobile', module: 'react-native-reanimated'
