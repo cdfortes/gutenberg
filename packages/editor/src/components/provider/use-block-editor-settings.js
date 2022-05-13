@@ -108,6 +108,7 @@ function useBlockEditorSettings( settings, hasTemplate ) {
 				'__unstableGalleryWithImageBlocks',
 				'alignWide',
 				'allowedBlockTypes',
+				'allowRightClickOverrides',
 				'bodyPlaceholder',
 				'canLockBlocks',
 				'codeEditingEnabled',
