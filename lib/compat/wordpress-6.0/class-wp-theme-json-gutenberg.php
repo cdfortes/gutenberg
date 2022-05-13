@@ -370,6 +370,13 @@ class WP_Theme_JSON_Gutenberg extends WP_Theme_JSON_5_9 {
 				if ( $has_block_gap_support ) {
 					$block_rules .= '.wp-site-blocks > * { margin-block-start: 0; margin-block-end: 0; }';
 					$block_rules .= '.wp-site-blocks > * + * { margin-block-start: var( --wp--style--block-gap ); }';
+
+					$block_gap_value = _wp_array_get( $node, array( 'spacing', 'blockGap' ), '0.5em' );
+					foreach( static::LAYOUT_STYLES as $key => $layout_style_selectors ) {
+						foreach( $layout_style_selectors as $layout_selector => $css_property ) {
+							$block_rules .= "$selector $layout_selector { " . $css_property . ': ' . $block_gap_value . " }";
+						}
+					}
 				}
 			}
 		}
