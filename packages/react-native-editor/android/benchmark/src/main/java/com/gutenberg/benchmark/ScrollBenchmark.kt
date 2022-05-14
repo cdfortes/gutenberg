@@ -20,17 +20,32 @@ class ScrollBenchmark {
     fun scrollToEndFrameMetrics() = benchmarkRule.measureRepeated(
         packageName = "com.gutenberg",
         metrics = listOf(FrameTimingMetric()),
+        iterations = 2,
+        startupMode = StartupMode.COLD
+    ) {
+        pressHome()
+        startActivityAndWait()
+        device.waitForIdle()
+        scrollToEnd(device)
+    }
+
+    @Test
+    fun tapOnHeadingBlock() = benchmarkRule.measureRepeated(
+        packageName = "com.gutenberg",
+        metrics = listOf(FrameTimingMetric()),
         iterations = 10,
         startupMode = StartupMode.COLD
     ) {
         pressHome()
         startActivityAndWait()
+        device.waitForIdle()
 
-        // Ensure app is done starting up so that we're only testing scroll performance.
-        // This might be unnecessary.
-        sleep(2000)
+        // Without this, the attempt to find the heading block returns null
+        sleep(1000)
 
-        scrollToEnd(device)
+        val headingBlock = device.findObject(By.text("What is Gutenberg?"))
+        headingBlock.click()
+        device.waitForIdle()
     }
 
     // Based on UiScrollable's flingToEnd and scrollToEnd functions. Difference is that this
@@ -51,6 +66,7 @@ class ScrollBenchmark {
             sleep(3000)
         }
 
+        device.waitForIdle()
         val lastBlock = device.findObject(By.text(BuildConfig.BENCHMARK_LAST_BLOCK_TEXT))
         if (lastBlock == null) {
             fail("Did not scroll until the last block was on screen")
