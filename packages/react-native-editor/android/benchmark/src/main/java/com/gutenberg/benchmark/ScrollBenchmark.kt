@@ -20,7 +20,7 @@ class ScrollBenchmark {
     fun scrollToEndFrameMetrics() = benchmarkRule.measureRepeated(
         packageName = "com.gutenberg",
         metrics = listOf(FrameTimingMetric()),
-        iterations = 2,
+        iterations = 10,
         startupMode = StartupMode.COLD
     ) {
         pressHome()
